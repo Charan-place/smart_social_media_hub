@@ -1,0 +1,18 @@
+{
+  "name": "contentflow-dashboard",
+  "version": "1.0.0",
+  "description": "YouTube & Instagram Multi-Channel Dashboard",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "build": "cd client && npm run build",
+    "seed-admin": "cd server && npm run seed-admin",
+    "start": "cd server && npm start"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

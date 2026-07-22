@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: contentflow-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node src/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # All other vars must be set manually in Render dashboard (they contain secrets)
+      # See .env for the full list of required variables
