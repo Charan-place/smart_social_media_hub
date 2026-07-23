@@ -39,8 +39,8 @@ export default function Upload() {
   useEffect(() => {
     if (!contentType) return;
     const isYT = contentType.startsWith('youtube_');
-    const compatible = channels.filter(ch => ch.platform === (isYT ? 'youtube' : 'instagram'));
-    setSelectedPlatforms(compatible.map(c => c.platformId));
+    const compatible = channels.filter((ch: any) => ch.platform === (isYT ? 'youtube' : 'instagram'));
+    setSelectedPlatforms(compatible.map((c: any) => c.platformId));
   }, [contentType, channels.length]);
 
   const getAcceptType = () => {
@@ -64,8 +64,8 @@ export default function Upload() {
     try {
       // Create draft post first
       const platformDocs = channels
-        .filter(ch => selectedPlatforms.includes(ch.platformId))
-        .map(ch => ({
+        .filter((ch: any) => selectedPlatforms.includes(ch.platformId))
+        .map((ch: any) => ({
           platform: ch.platform,
           channelId: ch._id,
           platformChannelId: ch.platformId,
@@ -94,8 +94,8 @@ export default function Upload() {
 
       // YouTube upload
       const ytChannelIds = channels
-        .filter(ch => selectedPlatforms.includes(ch.platformId) && ch.platform === 'youtube')
-        .map(ch => ch.platformId);
+        .filter((ch: any) => selectedPlatforms.includes(ch.platformId) && ch.platform === 'youtube')
+        .map((ch: any) => ch.platformId);
 
       if (ytChannelIds.length > 0) {
         formData.set('channelIds', JSON.stringify(ytChannelIds));
@@ -111,8 +111,8 @@ export default function Upload() {
 
       // Instagram publish
       const igAccountIds = channels
-        .filter(ch => selectedPlatforms.includes(ch.platformId) && ch.platform === 'instagram')
-        .map(ch => ch.platformId);
+        .filter((ch: any) => selectedPlatforms.includes(ch.platformId) && ch.platform === 'instagram')
+        .map((ch: any) => ch.platformId);
 
       if (igAccountIds.length > 0) {
         const igFormData = new FormData();
