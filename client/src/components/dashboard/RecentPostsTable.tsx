@@ -28,7 +28,7 @@ export default function RecentPostsTable({ posts, loading }: Props) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-sm min-w-[600px]">
         <thead>
           <tr className="text-xs text-gray-500 border-b border-[#2f2f2f]">
             <th className="text-left pb-3 font-medium pr-4">Content</th>
