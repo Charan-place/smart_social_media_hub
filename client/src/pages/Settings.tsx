@@ -91,8 +91,9 @@ export default function Settings() {
   return (
     <div className="flex flex-col flex-1">
       <Navbar title="Settings" />
-      <div className="flex-1 p-6 max-w-3xl mx-auto w-full">
-        <div className="flex border-b border-[#2f2f2f] mb-6">
+      <div className="flex-1 p-4 sm:p-6 max-w-3xl mx-auto w-full">
+        {/* Tabs — horizontal scroll on narrow screens */}
+        <div className="flex border-b border-[#2f2f2f] mb-5 sm:mb-6 overflow-x-auto scrollbar-hide -mx-4 sm:-mx-6 px-4 sm:px-6">
           {tabs.map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
               className={`tab ${activeTab === t.id ? 'active' : ''}`}>{t.label}</button>

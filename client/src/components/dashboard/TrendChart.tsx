@@ -39,16 +39,17 @@ export default function TrendChart({ data, metrics = defaultMetrics }: TrendChar
   }
 
   return (
-    <ResponsiveContainer width="100%" height={280}>
+    <ResponsiveContainer width="100%" height="100%" minHeight={200} aspect={window.innerWidth < 640 ? 1.8 : 2.8}>
       <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#1f1f1f" />
-        <XAxis dataKey="date" tick={{ fill: '#6b7280', fontSize: 11 }} tickLine={false} axisLine={false} />
-        <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} tickLine={false} axisLine={false} tickFormatter={formatNumber} width={45} />
+        <XAxis dataKey="date" tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false}
+          interval={window.innerWidth < 640 ? 'preserveStartEnd' : 'preserveEnd'} />
+        <YAxis tick={{ fill: '#6b7280', fontSize: 10 }} tickLine={false} axisLine={false} tickFormatter={formatNumber} width={40} />
         <Tooltip content={<CustomTooltip />} />
         <Legend
-          wrapperStyle={{ fontSize: 12, color: '#9ca3af', paddingTop: 16 }}
+          wrapperStyle={{ fontSize: 11, color: '#9ca3af', paddingTop: 8 }}
           iconType="circle"
-          iconSize={8}
+          iconSize={7}
         />
         {metrics.map(m => (
           <Line

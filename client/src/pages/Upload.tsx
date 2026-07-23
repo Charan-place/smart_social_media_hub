@@ -146,7 +146,7 @@ export default function Upload() {
     <div className="flex flex-col flex-1">
       <Navbar title="Upload & Publish" subtitle="Post to all your channels at once" />
 
-      <div className="flex-1 p-6 max-w-4xl mx-auto w-full">
+      <div className="flex-1 p-4 sm:p-6 max-w-4xl mx-auto w-full">
         <div className="space-y-6">
 
           {/* Step 1: Content Type */}
