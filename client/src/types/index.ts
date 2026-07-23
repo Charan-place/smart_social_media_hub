@@ -3,6 +3,7 @@ export interface User {
   name: string;
   email: string;
   avatar?: string;
+  googleId?: string;
   role: 'user' | 'admin';
   isVerified: boolean;
   isActive: boolean;
