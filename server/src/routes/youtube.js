@@ -18,7 +18,9 @@ router.get('/auth', protect, (req, res) => {
 });
 
 // GET /api/youtube/callback — handle YouTube OAuth callback
-router.get('/callback', protect, async (req, res) => {
+// NOTE: no `protect` here — this is a redirect from Google, so no cookie/JWT is present.
+// The user identity comes from the `state` param set during /auth (contains the user's MongoDB _id).
+router.get('/callback', async (req, res) => {
   try {
     const { code, state: userId } = req.query;
     if (!code) return res.redirect(`${process.env.CLIENT_URL}/settings?error=no_code`);
