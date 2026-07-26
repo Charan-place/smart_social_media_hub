@@ -122,7 +122,12 @@ router.post('/upload', protect, uploadLimiter, uploadMemory.fields([
         const videoData = await ytService.uploadVideo(tokens, videoFile.buffer, parsedSettings);
 
         if (thumbnailFile && videoData.id) {
-          try { await ytService.setThumbnail(tokens, videoData.id, thumbnailFile.buffer); } catch (_) {}
+          try {
+            await ytService.setThumbnail(tokens, videoData.id, thumbnailFile.buffer, thumbnailFile.mimetype);
+          } catch (thumbErr) {
+            console.error(`Thumbnail upload failed for video ${videoData.id}:`, thumbErr.message);
+            // Non-fatal — video is still published, thumbnail just won't be set
+          }
         }
 
         results.push({
