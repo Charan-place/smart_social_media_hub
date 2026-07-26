@@ -85,14 +85,14 @@ router.get('/callback', async (req, res) => {
 
 // POST /api/youtube/upload — upload video to YouTube
 router.post('/upload', protect, uploadLimiter, uploadMemory.fields([
-  { name: 'video', maxCount: 1 },
+  { name: 'media', maxCount: 1 },
   { name: 'thumbnail', maxCount: 1 },
 ]), async (req, res) => {
   try {
     const { channelIds, settings, postId } = req.body;
     const parsedChannelIds = JSON.parse(channelIds || '[]');
     const parsedSettings = JSON.parse(settings || '{}');
-    const videoFile = req.files?.video?.[0];
+    const videoFile = req.files?.media?.[0];
     const thumbnailFile = req.files?.thumbnail?.[0];
 
     if (!videoFile) return res.status(400).json({ success: false, message: 'Video file is required.' });
