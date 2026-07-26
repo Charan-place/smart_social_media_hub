@@ -254,6 +254,9 @@ export default function Upload() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-white">{r.channelId || r.accountId}</p>
                       {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" className="text-xs text-red-400 hover:underline">{r.url}</a>}
+                      {r.status === 'published' && r.thumbnailSet === false && thumbnail && (
+                        <p className="text-xs text-yellow-400 mt-0.5">⚠ Thumbnail could not be set — your YouTube channel may need phone verification to enable custom thumbnails.</p>
+                      )}
                       {r.error && <p className="text-xs text-red-400">{r.error}</p>}
                     </div>
                     <span className={r.status === 'published' ? 'badge-green' : 'badge-red'}>{r.status}</span>
