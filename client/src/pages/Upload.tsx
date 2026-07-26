@@ -101,18 +101,31 @@ export default function Upload() {
         const isShort = contentType === 'youtube_short';
         const baseDesc = ytSettings.description || caption || '';
         const hashtagLine = hashtags.map(h => `#${h}`).join(' ');
-        // YouTube Shorts: must have #Shorts in title or description
         const shortsTag = isShort && !baseDesc.toLowerCase().includes('#shorts') ? '#Shorts' : '';
         const fullDescription = [baseDesc, hashtagLine, shortsTag].filter(Boolean).join('\n\n');
+
+        // ── DEBUG LOGS (frontend) ──────────────────────────────────
+        console.group(`[UPLOAD] YouTube ${isShort ? 'SHORT' : 'VIDEO'}`);
+        console.log('contentType       :', contentType);
+        console.log('isShort           :', isShort);
+        console.log('thumbnail state   :', thumbnail ? `${thumbnail.name} (${thumbnail.size} bytes, ${thumbnail.type})` : 'null — NO THUMBNAIL SELECTED');
+        console.log('formData has thumbnail:', formData.has('thumbnail'));
+        console.log('channelIds        :', ytChannelIds);
+        console.log('settings.title    :', ytSettings.title || caption?.slice(0, 100) || 'Untitled');
+        console.log('settings.desc ends with #Shorts:', fullDescription.includes('#Shorts'));
+        console.groupEnd();
+        // ─────────────────────────────────────────────────────────────
 
         formData.set('channelIds', JSON.stringify(ytChannelIds));
         formData.set('settings', JSON.stringify({
           ...ytSettings,
+          contentType,           // pass contentType so backend can log it
           title: ytSettings.title || caption?.slice(0, 100) || 'Untitled',
           description: fullDescription,
           scheduledPublishTime: undefined,
         }));
         const ytRes = await youtubeApi.uploadVideo(formData, (p) => setUploadProgress(Math.round(p * 0.5)));
+        console.log('[UPLOAD] YouTube API response:', JSON.stringify(ytRes, null, 2));
         batchResults = [...batchResults, ...ytRes.results];
       }
 
