@@ -98,11 +98,18 @@ export default function Upload() {
         .map((ch: any) => ch.platformId);
 
       if (ytChannelIds.length > 0) {
+        const isShort = contentType === 'youtube_short';
+        const baseDesc = ytSettings.description || caption || '';
+        const hashtagLine = hashtags.map(h => `#${h}`).join(' ');
+        // YouTube Shorts: must have #Shorts in title or description
+        const shortsTag = isShort && !baseDesc.toLowerCase().includes('#shorts') ? '#Shorts' : '';
+        const fullDescription = [baseDesc, hashtagLine, shortsTag].filter(Boolean).join('\n\n');
+
         formData.set('channelIds', JSON.stringify(ytChannelIds));
         formData.set('settings', JSON.stringify({
           ...ytSettings,
           title: ytSettings.title || caption?.slice(0, 100) || 'Untitled',
-          description: `${ytSettings.description || caption || ''}\n\n${hashtags.map(h => `#${h}`).join(' ')}`,
+          description: fullDescription,
           scheduledPublishTime: undefined,
         }));
         const ytRes = await youtubeApi.uploadVideo(formData, (p) => setUploadProgress(Math.round(p * 0.5)));
