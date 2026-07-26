@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main, feature/**]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Frontend: type-check + build ──────────────────────────────────────────
+  client:
+    name: Client — type-check & build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+        env:
+          # Provide a dummy API URL so the build doesn't fail on missing env vars.
+          # Real values are set in Vercel's dashboard.
+          VITE_API_URL: https://placeholder.onrender.com
+
+  # ── Backend: install + syntax check ───────────────────────────────────────
+  server:
+    name: Server — install & syntax check
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Syntax check (node --check)
+        run: |
+          find src -name "*.js" | xargs -I{} node --check {}
+        shell: bash
