@@ -1,4 +1,5 @@
 const { google } = require('googleapis');
+const { Readable } = require('stream');
 const User = require('../models/User');
 const Channel = require('../models/Channel');
 
@@ -94,12 +95,15 @@ const uploadVideo = async (tokens, videoBuffer, settings) => {
     requestBody.status.publishAt = scheduledPublishTime;
   }
 
+  // Google API requires a readable stream, not a raw Buffer
+  const videoStream = Readable.from(videoBuffer);
+
   const response = await youtube.videos.insert({
     part: ['snippet', 'status'],
     notifySubscribers,
     requestBody,
     media: {
-      body: videoBuffer,
+      body: videoStream,
     },
   });
 
@@ -109,10 +113,11 @@ const uploadVideo = async (tokens, videoBuffer, settings) => {
 // Upload a thumbnail
 const setThumbnail = async (tokens, videoId, thumbnailBuffer) => {
   setCredentials(tokens);
+  const thumbnailStream = Readable.from(thumbnailBuffer);
   const response = await youtube.thumbnails.set({
     videoId,
     media: {
-      body: thumbnailBuffer,
+      body: thumbnailStream,
     },
   });
   return response.data;
