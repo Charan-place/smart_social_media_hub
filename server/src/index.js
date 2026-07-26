@@ -19,6 +19,10 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 
+// Trust Render/Heroku/etc reverse proxy so express-rate-limit can
+// read the real client IP from X-Forwarded-For headers correctly
+app.set('trust proxy', 1);
+
 // Connect to MongoDB
 connectDB();
 

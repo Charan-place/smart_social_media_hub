@@ -119,23 +119,38 @@ router.post('/upload', protect, uploadLimiter, uploadMemory.fields([
           );
         }
 
+        const isShort = parsedSettings.contentType === 'youtube_short';
+
+        // ── DEBUG LOGS (backend) ──────────────────────────────────
+        console.log(`[YT-UPLOAD] ─── START ───`);
+        console.log(`[YT-UPLOAD] contentType   : ${parsedSettings.contentType || 'not sent'}`);
+        console.log(`[YT-UPLOAD] isShort       : ${isShort}`);
+        console.log(`[YT-UPLOAD] channelId     : ${channelId}`);
+        console.log(`[YT-UPLOAD] videoFile     : ${videoFile.originalname} | ${videoFile.size} bytes | ${videoFile.mimetype}`);
+        console.log(`[YT-UPLOAD] thumbnailFile : ${thumbnailFile ? `${thumbnailFile.originalname} | ${thumbnailFile.size} bytes | ${thumbnailFile.mimetype}` : 'NOT RECEIVED — no thumbnail in request'}`);
+        // ──────────────────────────────────────────────────────────
+
         const videoData = await ytService.uploadVideo(tokens, videoFile.buffer, parsedSettings);
-        console.log(`[YT] Video uploaded: ${videoData.id} | thumbnailFile present: ${!!thumbnailFile}`);
+        console.log(`[YT-UPLOAD] Video inserted: ${videoData.id} | status: ${videoData.status?.uploadStatus}`);
 
         let thumbnailSet = false;
         if (thumbnailFile && videoData.id) {
-          // Wait 3s for YouTube to register the video before accepting thumbnail
+          console.log(`[YT-THUMB] Waiting 3s before thumbnails.set for ${isShort ? 'SHORT' : 'VIDEO'} ${videoData.id}...`);
           await new Promise(r => setTimeout(r, 3000));
           try {
+            console.log(`[YT-THUMB] Calling thumbnails.set | videoId=${videoData.id} | mimeType=${thumbnailFile.mimetype} | size=${thumbnailFile.size}`);
             await ytService.setThumbnail(tokens, videoData.id, thumbnailFile.buffer, thumbnailFile.mimetype);
             thumbnailSet = true;
-            console.log(`[YT] Thumbnail set for video ${videoData.id}`);
+            console.log(`[YT-THUMB] ✅ SUCCESS — thumbnail set for ${isShort ? 'SHORT' : 'VIDEO'} ${videoData.id}`);
           } catch (thumbErr) {
-            console.error(`[YT] Thumbnail FAILED for video ${videoData.id}:`, thumbErr.message, thumbErr.response?.data);
-            // Non-fatal — video is still published
+            const errData = thumbErr.response?.data || thumbErr.response?.status || 'no response body';
+            console.error(`[YT-THUMB] ❌ FAILED for ${isShort ? 'SHORT' : 'VIDEO'} ${videoData.id}`);
+            console.error(`[YT-THUMB]    message : ${thumbErr.message}`);
+            console.error(`[YT-THUMB]    errData : ${JSON.stringify(errData)}`);
+            console.error(`[YT-THUMB]    code    : ${thumbErr.code || 'none'}`);
           }
         } else if (!thumbnailFile) {
-          console.log(`[YT] No thumbnail file received for video ${videoData.id} — skipping thumbnails.set`);
+          console.log(`[YT-THUMB] SKIPPED — no thumbnail file in request for ${isShort ? 'SHORT' : 'VIDEO'} ${videoData.id}`);
         }
 
         results.push({
