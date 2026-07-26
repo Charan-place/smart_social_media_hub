@@ -120,14 +120,22 @@ router.post('/upload', protect, uploadLimiter, uploadMemory.fields([
         }
 
         const videoData = await ytService.uploadVideo(tokens, videoFile.buffer, parsedSettings);
+        console.log(`[YT] Video uploaded: ${videoData.id} | thumbnailFile present: ${!!thumbnailFile}`);
 
+        let thumbnailSet = false;
         if (thumbnailFile && videoData.id) {
+          // Wait 3s for YouTube to register the video before accepting thumbnail
+          await new Promise(r => setTimeout(r, 3000));
           try {
             await ytService.setThumbnail(tokens, videoData.id, thumbnailFile.buffer, thumbnailFile.mimetype);
+            thumbnailSet = true;
+            console.log(`[YT] Thumbnail set for video ${videoData.id}`);
           } catch (thumbErr) {
-            console.error(`Thumbnail upload failed for video ${videoData.id}:`, thumbErr.message);
-            // Non-fatal — video is still published, thumbnail just won't be set
+            console.error(`[YT] Thumbnail FAILED for video ${videoData.id}:`, thumbErr.message, thumbErr.response?.data);
+            // Non-fatal — video is still published
           }
+        } else if (!thumbnailFile) {
+          console.log(`[YT] No thumbnail file received for video ${videoData.id} — skipping thumbnails.set`);
         }
 
         results.push({
@@ -135,6 +143,7 @@ router.post('/upload', protect, uploadLimiter, uploadMemory.fields([
           status: 'published',
           videoId: videoData.id,
           url: `https://youtube.com/watch?v=${videoData.id}`,
+          thumbnailSet,
         });
 
         // Update post platforms status
