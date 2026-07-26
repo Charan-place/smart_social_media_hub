@@ -111,12 +111,13 @@ const uploadVideo = async (tokens, videoBuffer, settings) => {
 };
 
 // Upload a thumbnail
-const setThumbnail = async (tokens, videoId, thumbnailBuffer) => {
+const setThumbnail = async (tokens, videoId, thumbnailBuffer, mimeType = 'image/jpeg') => {
   setCredentials(tokens);
   const thumbnailStream = Readable.from(thumbnailBuffer);
   const response = await youtube.thumbnails.set({
     videoId,
     media: {
+      mimeType,
       body: thumbnailStream,
     },
   });
